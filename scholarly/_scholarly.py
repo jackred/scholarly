@@ -55,7 +55,7 @@ class _Scholarly:
     def search_pubs(self,
                     query: str, patents: bool = True,
                     citations: bool = True, year_low: int = None,
-                    year_high: int = None)->_SearchScholarIterator:
+                    year_high: int = None, to_sort: int = None)->_SearchScholarIterator:
         """Searches by query and returns a generator of Publication objects
 
         :param query: terms to be searched
@@ -68,6 +68,8 @@ class _Scholarly:
         :type year_low: int, optional
         :param year_high: maximum year of publication, defaults to None
         :type year_high: int, optional
+        :param to_sort: Wheter or not to sort by date. 0/False = no, 1/True = yes, +2 = yes, result including everything, not only Abstract
+        :type to_sort: int, optional
         :returns: Generator of Publication objects
         :rtype: Iterator[:class:`Publication`]
 
@@ -116,8 +118,9 @@ class _Scholarly:
         yr_hi = '&as_yhi={0}'.format(year_high) if year_high is not None else ''
         citations = '&as_vis={0}'.format(1 - int(citations))
         patents = '&as_sdt={0},33'.format(1 - int(patents))
+        sort = '&scisbd={0}'.format(int(to_sort)) if to_sort is not None else ''
         # improve str below
-        url = url + yr_lo + yr_hi + citations + patents
+        url = url + yr_lo + yr_hi + citations + patents + sort
         return self.__nav.search_publications(url)
 
     def search_single_pub(self, pub_title: str, filled: bool = False)->PublicationParser:
